@@ -13,19 +13,32 @@ project(
 include(cmake/project-is-top-level.cmake)
 include(cmake/variables.cmake)
 
+set(FETCHCONTENT_BASE_DIR "${CMAKE_BINARY_DIR}/3rd-party" CACHE BOOL "" FORCE)
+
 # ---- Download and install dependencies
+find_package(raylib QUIET)
+if (NOT raylib_FOUND)
+    include(FetchContent)
+    set(FETCHCONTENT_QUIET FALSE)
+    FetchContent_Declare(raygui
+        GIT_REPOSITORY https://github.com/raysan5/raygui.git
+        GIT_TAG 3.1
+    )
+    FetchContent_MakeAvailable(raygui)
+endif()
+
 find_package(raylib QUIET)
 if (NOT raylib_FOUND)
     include(FetchContent)
     set(FETCHCONTENT_QUIET FALSE)
     FetchContent_Declare(raylib
         GIT_REPOSITORY https://github.com/raysan5/raylib.git
-        GIT_TAG 1f806b555dd1ecb7e77797ed0de57d62a6bdd6f0 # 2022-05-27
+        GIT_TAG 4.0.0
     )
 
     set(BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
     set(BUILD_GAMES    OFF CACHE BOOL "" FORCE)
-    # set(INCLUDE_EVERYTHING ON CACHE BOOL "" FORCE)
+    set(INCLUDE_EVERYTHING ON CACHE BOOL "" FORCE)
     FetchContent_MakeAvailable(raylib)
 endif()
 
@@ -41,8 +54,10 @@ if (NOT raylib_cpp_FOUND)
     FetchContent_MakeAvailable(raylib_cpp)
 endif()
 
-set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
+
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
+set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 
 #[[
 FetchContent_Declare(
@@ -57,6 +72,14 @@ set(SFML_BUILD_TEST_SUIT OFF)
 
 FetchContent_MakeAvailable(sfml)
 ]]
+
+include(FetchContent)
+set(FETCHCONTENT_QUIET FALSE)
+FetchContent_Declare(smb_assset
+    GIT_REPOSITORY https://github.com/bensuperpc/super_mario_bros_asset.git
+    GIT_TAG a1776fcca7ba29b6935e428772af4d11f638af0c # 2022-05-28
+)
+FetchContent_MakeAvailable(smb_assset)
 
 # ---- Declare library ----
 
@@ -73,6 +96,8 @@ target_include_directories(
 
 target_compile_features(super_mario_bros_lib PUBLIC cxx_std_20)
 
+add_subdirectory(source/benlib)
+
 # ---- Declare executable ----
 
 add_executable(super_mario_bros_exe source/main.cpp source/intro/raylib_intro.h source/intro/benlib_intro.h source/intro/raylib_cpp_intro.h)
@@ -88,7 +113,7 @@ target_compile_features(super_mario_bros_exe PRIVATE cxx_std_20)
 
 target_link_libraries(super_mario_bros_exe PRIVATE super_mario_bros_lib)
 
-target_link_libraries(super_mario_bros_exe PRIVATE raylib raylib_cpp)
+target_link_libraries(super_mario_bros_exe PRIVATE raylib raylib_cpp benlib)
 
 # ---- Install rules ----
 
