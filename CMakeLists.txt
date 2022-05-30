@@ -13,13 +13,19 @@ project(
 include(cmake/project-is-top-level.cmake)
 include(cmake/variables.cmake)
 
-set(FETCHCONTENT_BASE_DIR "${CMAKE_BINARY_DIR}/3rd-party" CACHE BOOL "" FORCE)
+# set(OpenGL_GL_PREFERENCE GLVND)
+
+# ---- Enable ccache ----
+include(cmake/ccache.cmake)
 
 # ---- Download and install dependencies
+set(FETCHCONTENT_BASE_DIR "${CMAKE_BINARY_DIR}/3rd-party" CACHE BOOL "" FORCE)
+set(FETCHCONTENT_QUIET FALSE CACHE BOOL "" FORCE)
+
+include(FetchContent)
+
 find_package(raylib QUIET)
 if (NOT raylib_FOUND)
-    include(FetchContent)
-    set(FETCHCONTENT_QUIET FALSE)
     FetchContent_Declare(raygui
         GIT_REPOSITORY https://github.com/raysan5/raygui.git
         GIT_TAG 3.1
@@ -29,8 +35,6 @@ endif()
 
 find_package(raylib QUIET)
 if (NOT raylib_FOUND)
-    include(FetchContent)
-    set(FETCHCONTENT_QUIET FALSE)
     FetchContent_Declare(raylib
         GIT_REPOSITORY https://github.com/raysan5/raylib.git
         GIT_TAG 4.0.0
@@ -44,20 +48,40 @@ endif()
 
 find_package(raylib_cpp QUIET)
 if (NOT raylib_cpp_FOUND)
-    include(FetchContent)
-    set(FETCHCONTENT_QUIET FALSE)
     FetchContent_Declare(raylib_cpp
         GIT_REPOSITORY https://github.com/RobLoach/raylib-cpp.git
-        GIT_TAG e7731d306ead3b5b9dd1703d5ee8f4341a7a695c # 2022-05-27
+        GIT_TAG e7731d306ead3b5b9dd1703d5ee8f4341a7a695c # 2022-05-31
     )
     set(BUILD_RAYLIB_CPP_EXAMPLES OFF CACHE BOOL "" FORCE)
     FetchContent_MakeAvailable(raylib_cpp)
 endif()
 
+FetchContent_Declare(nbnet
+    GIT_REPOSITORY https://github.com/nathhB/nbnet.git
+    GIT_TAG c68e32f8fd96ad66cd2da4224e35c55880c1026f # 2022-05-31
+    CONFIGURE_COMMAND ""
+    BUILD_COMMAND ""
+    INSTALL_COMMAND ""
+    TEST_COMMAND ""
+
+)
+FetchContent_MakeAvailable(nbnet)
+include_directories("${nbnet_SOURCE_DIR}")
+
+FetchContent_Declare(bs-thread-pool
+    GIT_REPOSITORY https://github.com/bshoshany/thread-pool.git
+    GIT_TAG 9d43f5d05d11835ec027ae0679f8cd8a1a87e9cb # 2022-05-31
+    CONFIGURE_COMMAND ""
+    BUILD_COMMAND ""
+    INSTALL_COMMAND ""
+    TEST_COMMAND ""
+)
+FetchContent_MakeAvailable(bs-thread-pool)
+include_directories("${bs-thread-pool_SOURCE_DIR}")
 
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
+set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
-set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 
 #[[
 FetchContent_Declare(
@@ -73,8 +97,6 @@ set(SFML_BUILD_TEST_SUIT OFF)
 FetchContent_MakeAvailable(sfml)
 ]]
 
-include(FetchContent)
-set(FETCHCONTENT_QUIET FALSE)
 FetchContent_Declare(smb_assset
     GIT_REPOSITORY https://github.com/bensuperpc/super_mario_bros_asset.git
     GIT_TAG a1776fcca7ba29b6935e428772af4d11f638af0c # 2022-05-28
