@@ -49,13 +49,13 @@ auto main() -> int
 
   player.SetSpeed(raylib::Vector2 {0, 2.0});
 
+  raylib::Image image_ground_texture (asset_path + "sprite sheets/blocks/Block.png");
 
+  raylib::Texture ground_texture(image_ground_texture);
 
-  raylib::Texture ground_texture(asset_path + "sprite sheets/blocks/Block.png");
-
-  benlib::sprite ground(ground_texture);
+  benlib::sprite ground(&ground_texture);
   ground.SetSourceRect(raylib::Rectangle {4, 340, 16, 16});
-  ground.Resize(16, 16);
+  ground.Resize(64, 64);
 
   Vector2 mousePosition = {0.0f, -0.0f};
   // Image imageBunny = LoadImageFromMemory(".png", wabbit_alpha_png,
@@ -63,8 +63,8 @@ auto main() -> int
   // LoadTextureFromImage(imageBunny);
 
   raylib::Camera2D camera = {};
-  camera.target = (Vector2) {player.GetX() + player.GetWidth() / 2.0f,
-                               player.GetY() + player.GetHeight() / 2.0f};
+  camera.target = (Vector2) {player.GetX() + player.Rectangle::GetWidth() / 2.0f,
+                               player.GetY() + player.Rectangle::GetHeight() / 2.0f};
 
   camera.offset = (Vector2) {screenWidth / 2.0f, screenHeight / 2.0f};
   camera.rotation = 0.0f;
@@ -97,8 +97,8 @@ auto main() -> int
         player.Move(0, 4.0);
     }
 
-    camera.target = (Vector2) {player.GetX() + player.GetWidth() / 2.0f,
-                               player.GetY() + player.GetHeight() / 2.0f};
+    camera.target = (Vector2) {player.GetX() + player.Rectangle::GetWidth() / 2.0f,
+                               player.GetY() + player.Rectangle::GetHeight() / 2.0f};
 
     if (IsKeyDown(KEY_A))
       camera.rotation--;

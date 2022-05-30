@@ -12,10 +12,9 @@
 namespace benlib
 {
 
-class sprite : public raylib::Rectangle
+class sprite : public raylib::Rectangle, public raylib::Texture
 {
 private:
-  raylib::Texture* texture;
   raylib::Rectangle texture_source_rect;
 
   raylib::Vector2 speed = {0, 0};
@@ -32,28 +31,14 @@ private:
 public:
   sprite() {}
 
-  sprite(raylib::Texture* texture)
+  sprite(::Texture* texture) : raylib::Rectangle(0, 0, texture->width, texture->height), raylib::Texture(*texture) 
   {
-    this->texture = texture;
-    this->texture_source_rect = raylib::Rectangle {0,
-                                           0,
-                                           static_cast<float>(texture->width),
-                                           static_cast<float>(texture->height)};
-    this->raylib::Rectangle::x = 0;
-    this->raylib::Rectangle::y = 0;
-    this->raylib::Rectangle::width = static_cast<float>(texture->width);
-    this->raylib::Rectangle::height = static_cast<float>(texture->height);
+    texture_source_rect = raylib::Rectangle(0, 0, texture->width, texture->height);
   }
 
+/*
   sprite(raylib::Texture* texture, raylib::Rectangle texture_source_rect, raylib::Rectangle dest)
-  {
-    this->texture = texture;
-    this->texture_source_rect = texture_source_rect;
-    this->raylib::Rectangle::x = dest.x;
-    this->raylib::Rectangle::y = dest.y;
-    this->raylib::Rectangle::width = dest.width;
-    this->raylib::Rectangle::height = dest.height;
-  }
+      : raylib::Rectangle(dest), texture(texture), texture_source_rect(texture_source_rect) {}
 
   sprite(const raylib::Image& image)
   {
@@ -93,19 +78,17 @@ public:
     this->raylib::Rectangle::width = static_cast<float>(texture->width);
     this->raylib::Rectangle::height = static_cast<float>(texture->height);
   }
+  */
 
   ~sprite() {}
 
   void Draw()
   {
-    if (this->is_visible)
-    {
-      DrawTexturePro(*texture, texture_source_rect, *this, origin, rotation, tint);
-    }
+    this->raylib::Texture::Draw(this->texture_source_rect, *this, this->origin, this->rotation, this->tint);
 
     if (draw_bounding_box)
     {
-      this->DrawLines(BLACK);
+      this->raylib::Rectangle::DrawLines(BLACK);
     }
   }
 
@@ -139,7 +122,6 @@ public:
     this->raylib::Rectangle::height = v.y;
   }
 
-  GETTERSETTER(::Texture, Texture, *texture)
   GETTERSETTER(::Rectangle, SourceRect, texture_source_rect)
 
   inline ::Vector2 GetPosition() const
