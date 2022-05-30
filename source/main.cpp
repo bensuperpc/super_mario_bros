@@ -35,7 +35,7 @@ auto main() -> int
 
     raylib::Texture logo(asset_path + "sprite sheets/creatures/mario/Mario.png");
 
-    benlib::sprite mario(logo);
+    benlib::sprite mario(&logo);
 
     /*
     Image imageBunny =
@@ -47,16 +47,15 @@ auto main() -> int
 
     while (!window.ShouldClose())
     {
+
+        if (IsKeyDown(KEY_RIGHT)) mario.Move(4.0, 0);
+        if (IsKeyDown(KEY_LEFT)) mario.Move(-4.0, 0);
+        if (IsKeyDown(KEY_UP))  mario.Move(0, -4.0);
+        if (IsKeyDown(KEY_DOWN)) mario.Move(0, 4.0);
+
+
         BeginDrawing();
-
         window.ClearBackground(RAYWHITE);
-
-        raylib::DrawText("Congrats! You created your first window!", 190, 200, 20, LIGHTGRAY);
-
-        // Object methods.
-        logo.Draw(
-            screenWidth / 2 - logo.GetWidth() / 2,
-            screenHeight / 2 - logo.GetHeight() / 2);
         mario.Draw();
 
         EndDrawing();
@@ -65,7 +64,7 @@ auto main() -> int
 
     // De-Initialization
     //--------------------------------------------------------------------------------------
-    CloseWindow();        // Close window and OpenGL context
+    // CloseWindow();        // Close window and OpenGL context
     //--------------------------------------------------------------------------------------
 
 
