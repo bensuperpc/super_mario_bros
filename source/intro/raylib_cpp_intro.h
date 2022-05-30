@@ -74,10 +74,16 @@ void play_intro_raylib_cpp(const int screenWidth, const int screenHeight)
 
                 if (alpha <= 0.0f)
                 {
-                    alpha = 0.0f;
+                    return;
                 }
             }
         }
+
+        if (IsKeyPressed(KEY_ENTER))
+        {
+            return;
+        }
+
         //----------------------------------------------------------------------------------
 
         // Draw
