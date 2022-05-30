@@ -9,6 +9,7 @@ namespace benlib
 class entity : public benlib::sprite
 {
 private:
+bool is_alive = true;
 
 public:
 

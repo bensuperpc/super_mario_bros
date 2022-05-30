@@ -19,10 +19,15 @@ private:
   raylib::Rectangle texture_source_rect;
 
   raylib::Vector2 speed = {0, 0};
-  float rotation = 0.0;
+  const float rotation = 0.0;
+
+  const raylib::Vector2 origin = {0, 0};
 
   raylib::Color tint = {255, 255, 255, 255};
   uint64_t id = 0;
+
+  bool is_visible = true;
+  bool draw_bounding_box = false;
 
 public:
   sprite() {}
@@ -76,13 +81,32 @@ public:
     this->raylib::Rectangle::height = static_cast<float>(texture->height);
   }
 
+  sprite(const std::string & path)
+  {
+    this->texture = new raylib::Texture(path.data());
+    this->texture_source_rect = raylib::Rectangle {0,
+                                           0,
+                                           static_cast<float>(texture->width),
+                                           static_cast<float>(texture->height)};
+    this->raylib::Rectangle::x = 0;
+    this->raylib::Rectangle::y = 0;
+    this->raylib::Rectangle::width = static_cast<float>(texture->width);
+    this->raylib::Rectangle::height = static_cast<float>(texture->height);
+  }
+
   ~sprite() {}
 
   void Draw()
   {
-    const raylib::Vector2 origin = {0, 0};
-    DrawTexturePro(*texture, texture_source_rect, *this, origin, rotation, tint);
-    // this->DrawLines(BLACK);
+    if (this->is_visible)
+    {
+      DrawTexturePro(*texture, texture_source_rect, *this, origin, rotation, tint);
+    }
+
+    if (draw_bounding_box)
+    {
+      this->DrawLines(BLACK);
+    }
   }
 
   void Move()
@@ -132,8 +156,11 @@ public:
 
   GETTERSETTER(::Vector2, Speed, speed)
   GETTERSETTER(uint64_t, Id, id)
-  GETTERSETTER(float, Rotation, rotation)
   GETTERSETTER(::Color, Tint, tint)
+
+  GETTERSETTER(bool, IsVisible, is_visible)
+  GETTERSETTER(bool, DrawBoundingBox, draw_bounding_box)
+
 };
 
 }  // namespace benlib

@@ -1,5 +1,6 @@
 #include <iostream>
 #include <string>
+#include <thread>
 
 #include "entity.hpp"
 #include "intro/benlib_intro.h"
@@ -26,22 +27,45 @@ auto main() -> int
 
   const std::string asset_path = "../3rd-party/smb_assset-src/";
 
-  raylib::Texture logo(asset_path + "sprite sheets/creatures/mario/Mario.png");
+
+  raylib::Image image(asset_path + "sprite sheets/creatures/mario/Mario.png");
+  image.Crop(4, 52, 32, 16);
+
+  std::cout << "image.width: " << image.width << std::endl;
+  std::cout << "image.height: " << image.height << std::endl;
+  image.RotateCCW();
+    std::cout << "image.width: " << image.width << std::endl;
+  std::cout << "image.height: " << image.height << std::endl;
+
+  raylib::Texture logo(image);
 
   benlib::entity player(&logo);
-  player.SetSourceRect(raylib::Rectangle {4, 52, 32, 16});
-  player.Resize(32, 16);
-  player.SetRotation(-90.0);
+
+  //player.SetSourceRect(raylib::Rectangle {4, 52, 32, 16});
+  //player.Resize(32, 16);
+
   player.SetPosition(raylib::Vector2 {screenWidth / 2, screenHeight / 2});
+  //player.SetDrawBoundingBox(true);
+
+  player.SetSpeed(raylib::Vector2 {0, 2.0});
+
+
+
+  raylib::Texture ground_texture(asset_path + "sprite sheets/blocks/Block.png");
+
+  benlib::sprite ground(ground_texture);
+  ground.SetSourceRect(raylib::Rectangle {4, 340, 16, 16});
+  ground.Resize(16, 16);
 
   Vector2 mousePosition = {0.0f, -0.0f};
-
   // Image imageBunny = LoadImageFromMemory(".png", wabbit_alpha_png,
   // wabbit_alpha_png_len); Texture2D texBunny =
   // LoadTextureFromImage(imageBunny);
 
   raylib::Camera2D camera = {};
-  camera.target = (Vector2) {player.GetX() + player.GetHeight() / 2.0f, player.GetY() - player.GetWidth() / 2.0f};
+  camera.target = (Vector2) {player.GetX() + player.GetWidth() / 2.0f,
+                               player.GetY() + player.GetHeight() / 2.0f};
+
   camera.offset = (Vector2) {screenWidth / 2.0f, screenHeight / 2.0f};
   camera.rotation = 0.0f;
   camera.zoom = 1.0f;
@@ -49,18 +73,32 @@ auto main() -> int
   SetTargetFPS(60);
 
   while (!WindowShouldClose()) {
+
     mousePosition = GetMousePosition();
 
-    if (IsKeyDown(KEY_RIGHT))
-      player.Move(4.0, 0);
-    if (IsKeyDown(KEY_LEFT))
-      player.Move(-4.0, 0);
-    if (IsKeyDown(KEY_UP))
-      player.Move(0, -4.0);
-    if (IsKeyDown(KEY_DOWN))
-      player.Move(0, 4.0);
+    if(!player.CheckCollision(ground))
+    {
+      player.Move();
+    }
 
-    camera.target = (Vector2) {player.GetX() + player.GetHeight() / 2.0f, player.GetY() - player.GetWidth() / 2.0f};
+    if (IsKeyDown(KEY_RIGHT)) {
+        player.Move(4.0, 0);
+    }
+
+    if (IsKeyDown(KEY_LEFT)) {
+        player.Move(-4.0, 0);
+    }
+
+    if (IsKeyDown(KEY_UP)) {
+        player.Move(0, -4.0);
+    }
+
+    if (IsKeyDown(KEY_DOWN)) {
+        player.Move(0, 4.0);
+    }
+
+    camera.target = (Vector2) {player.GetX() + player.GetWidth() / 2.0f,
+                               player.GetY() + player.GetHeight() / 2.0f};
 
     if (IsKeyDown(KEY_A))
       camera.rotation--;
@@ -106,6 +144,8 @@ auto main() -> int
              screenWidth * 10,
              (int)camera.target.y,
              GREEN);
+
+    ground.Draw();
 
     EndMode2D();
 
