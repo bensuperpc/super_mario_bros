@@ -1,7 +1,6 @@
 #ifndef BENLIB_SPRITE_HPP
 #define BENLIB_SPRITE_HPP
 
-#include <iostream>
 #include <string>
 #include <string_view>
 #include <vector>
@@ -13,14 +12,12 @@
 namespace benlib
 {
 
-class sprite
+class sprite : public raylib::Rectangle
 {
 private:
   raylib::Texture* texture;
-  raylib::Rectangle source_rect;
-  raylib::Rectangle dest_rect;
+  raylib::Rectangle texture_source_rect;
 
-  raylib::Rectangle bounds;
   raylib::Vector2 speed = {0, 0};
   float rotation = 0.0;
 
@@ -28,57 +25,58 @@ private:
   uint64_t id = 0;
 
 public:
-  sprite() = delete;
+  sprite() {}
 
   sprite(raylib::Texture* texture)
   {
     this->texture = texture;
-    this->source_rect = raylib::Rectangle {0,
+    this->texture_source_rect = raylib::Rectangle {0,
                                            0,
                                            static_cast<float>(texture->width),
                                            static_cast<float>(texture->height)};
-    this->dest_rect = raylib::Rectangle {0,
-                                         0,
-                                         static_cast<float>(texture->width),
-                                         static_cast<float>(texture->height)};
-    this->bounds = raylib::Rectangle {0,
-                                      0,
-                                      static_cast<float>(texture->width),
-                                      static_cast<float>(texture->height)};
+    this->x = 0;
+    this->y = 0;
+    this->width = static_cast<float>(texture->width);
+    this->height = static_cast<float>(texture->height);
   }
+
+  sprite(raylib::Texture* texture, raylib::Rectangle texture_source_rect, raylib::Rectangle dest)
+  {
+    this->texture = texture;
+    this->texture_source_rect = texture_source_rect;
+    this->x = dest.x;
+    this->y = dest.y;
+    this->width = dest.width;
+    this->height = dest.height;
+  }
+
+  
+
 
   sprite(const raylib::Image& image)
   {
     this->texture = new raylib::Texture(image);
-    this->source_rect = raylib::Rectangle {0,
+    this->texture_source_rect = raylib::Rectangle {0,
                                            0,
                                            static_cast<float>(texture->width),
                                            static_cast<float>(texture->height)};
-    this->dest_rect = raylib::Rectangle {0,
-                                         0,
-                                         static_cast<float>(texture->width),
-                                         static_cast<float>(texture->height)};
-    this->bounds = raylib::Rectangle {0,
-                                      0,
-                                      static_cast<float>(texture->width),
-                                      static_cast<float>(texture->height)};
+    this->x = 0;
+    this->y = 0;
+    this->width = static_cast<float>(image.width);
+    this->height = static_cast<float>(image.height);
   }
 
   sprite(std::string_view path)
   {
     this->texture = new raylib::Texture(path.data());
-    this->source_rect = raylib::Rectangle {0,
+    this->texture_source_rect = raylib::Rectangle {0,
                                            0,
                                            static_cast<float>(texture->width),
                                            static_cast<float>(texture->height)};
-    this->dest_rect = raylib::Rectangle {0,
-                                         0,
-                                         static_cast<float>(texture->width),
-                                         static_cast<float>(texture->height)};
-    this->bounds = raylib::Rectangle {0,
-                                      0,
-                                      static_cast<float>(texture->width),
-                                      static_cast<float>(texture->height)};
+    this->x = 0;
+    this->y = 0;
+    this->width = static_cast<float>(texture->width);
+    this->height = static_cast<float>(texture->height);
   }
 
   ~sprite() {}
@@ -86,75 +84,44 @@ public:
   void Draw()
   {
     const raylib::Vector2 origin = {0, 0};
-    DrawTexturePro(*texture, source_rect, dest_rect, origin, rotation, tint);
-    bounds.DrawLines(BLACK);
+    DrawTexturePro(*texture, texture_source_rect, *this, origin, rotation, tint);
+    this->DrawLines(BLACK);
   }
-
-  bool CheckCollision(const sprite& other)
-  {
-    return CheckCollisionRecs(this->bounds, other.bounds);
-  }
-
-  bool CheckTextureCollision(const sprite& other)
-  {
-    return CheckCollisionRecs(this->dest_rect, other.dest_rect);
-  }
-
-  bool CheckCollision(const raylib::Rectangle& other)
-  {
-    return CheckCollisionRecs(this->bounds, other);
-  }
-  
-  bool CheckCollision(::Vector2 point) const {
-      return ::CheckCollisionPointRec(point, bounds);
-  }
-
 
   void Move()
   {
-    dest_rect.SetX(speed.x + dest_rect.GetX());
-    dest_rect.SetY(speed.y + dest_rect.GetY());
-
-    bounds.SetX(dest_rect.GetX());
-    bounds.SetY(dest_rect.GetY());
+    this->x += speed.x;
+    this->y += speed.y;
   }
 
   void Move(const float x, const float y)
   {
-    dest_rect.SetX(x + dest_rect.GetX());
-    dest_rect.SetY(y + dest_rect.GetY());
-
-    bounds.SetX(dest_rect.GetX());
-    bounds.SetY(dest_rect.GetY());
+    this->x += x;
+    this->y += y;
   }
 
   void Move(const ::Vector2& v)
   {
-    dest_rect.SetX(v.x + dest_rect.GetX());
-    dest_rect.SetY(v.y + dest_rect.GetY());
-
-    bounds.SetX(dest_rect.GetX());
-    bounds.SetY(dest_rect.GetY());
+    this->x += v.x;
+    this->y += v.y;
   }
 
   GETTERSETTER(::Texture, Texture, *texture)
-  GETTERSETTER(::Rectangle, SourceRect, source_rect)
-  GETTERSETTER(::Rectangle, DestRect, dest_rect)
-
-  // GETTERSETTER(::Vector2, Position, position)
+  GETTERSETTER(::Rectangle, SourceRect, texture_source_rect)
 
   inline ::Vector2 GetPosition() const
   {
-    ::Vector2 vec = {dest_rect.GetX(), dest_rect.GetY()};
+    ::Vector2 vec = {this->x, this->y};
     return vec;
   }
+
   inline void SetPosition(::Vector2 value)
   {
-    source_rect.SetX(value.x);
-    source_rect.SetY(value.y);
+
+    this->x = value.x;
+    this->y = value.y;
   }
 
-  GETTERSETTER(::Rectangle, Bounds, bounds)
   GETTERSETTER(::Vector2, Speed, speed)
   GETTERSETTER(uint64_t, Id, id)
   GETTERSETTER(float, Rotation, rotation)

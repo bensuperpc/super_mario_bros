@@ -9,7 +9,7 @@
 
 #include "raylib-cpp.hpp"
 
-#include "sprite.hpp"
+#include "entity.hpp"
 
 
 auto main() -> int
@@ -35,7 +35,15 @@ auto main() -> int
 
     raylib::Texture logo(asset_path + "sprite sheets/creatures/mario/Mario.png");
 
-    benlib::sprite mario(&logo);
+    benlib::entity mario(&logo);
+
+
+
+    raylib::Camera2D camera = { };
+    camera.target = (Vector2){ mario.x + 20.0f, mario.y + 20.0f };
+    camera.offset = (Vector2){ screenWidth/2.0f, screenHeight/2.0f };
+    camera.rotation = 0.0f;
+    camera.zoom = 1.0f;
 
     /*
     Image imageBunny =
@@ -55,8 +63,13 @@ auto main() -> int
 
 
         BeginDrawing();
+
+        
         window.ClearBackground(RAYWHITE);
+
+        BeginMode2D(camera);
         mario.Draw();
+        EndMode2D();
 
         EndDrawing();
     }
