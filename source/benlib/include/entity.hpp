@@ -17,12 +17,6 @@ enum class Direction
 const std::array<Direction, 4> ALL_DIRECTIONS = {
     Direction::NORTH, Direction::SOUTH, Direction::EAST, Direction::WEST};
 
-struct Edge
-{
-  float startX, startY;
-  float endX, endY;
-};
-
 namespace benlib
 {
 
@@ -141,22 +135,7 @@ public:
     }
   }
 
-  bool checkCollision(Direction direction,
-                      float xPosition,
-                      float yPosition,
-                      const benlib::sprite& level) const
-  {
-    Edge collisionEdge = calculateEdge(direction, xPosition, yPosition, 0.0f);
-    int startX = static_cast<int>(collisionEdge.startX);
-    int startY = static_cast<int>(collisionEdge.startY);
-    int endX = static_cast<int>(collisionEdge.endX);
-    int endY = static_cast<int>(collisionEdge.endY);
-
-    return CheckCollisionPointRec(raylib::Vector2(startX, startY), level)
-        || CheckCollisionPointRec(raylib::Vector2(endX, endY), level);
-  }
-
-  void resolveCollision(Direction direction,
+    void resolveCollision(Direction direction,
                         float topLeftX,
                         float topLeftY,
                         const benlib::sprite& level)
@@ -169,7 +148,7 @@ public:
       yPositionNew = level.GetY() + level.GetHeight();
       break;
       case Direction::SOUTH:
-        yPositionNew = level.GetY() - this->raylib::Rectangle::width;
+        yPositionNew = level.GetY() - this->raylib::Rectangle::height;
         break;
       case Direction::EAST:
         xPositionNew = level.GetX() - this->raylib::Rectangle::width;
@@ -181,11 +160,24 @@ public:
     }
   }
 
-  Edge calculateEdge(Direction direction,
+  bool checkCollision(Direction direction,
+                      float xPosition,
+                      float yPosition,
+                      const benlib::sprite& level) const
+  {
+    raylib::Rectangle collisionEdge = calculateEdge(direction, xPosition, yPosition, 1.0f);
+    return CheckCollisionRecs(level, collisionEdge);
+  }
+
+  raylib::Rectangle calculateEdge(Direction direction,
                      float topLeftX,
                      float topLeftY,
                      float directionOffset) const
   {
+
+      std::cout << "calculateEdge" << std::endl;
+      std::cout << "topLeftX: " << topLeftX << std::endl;
+      std::cout << "topLeftY: " << topLeftY << std::endl;
     switch (direction) {
       case Direction::NORTH:
         return {topLeftX,
@@ -194,19 +186,19 @@ public:
                 topLeftY};
       case Direction::SOUTH:
         return {topLeftX,
-                topLeftY + this->raylib::Rectangle::width,
+                topLeftY + this->raylib::Rectangle::height,
                 topLeftX + directionOffset * this->raylib::Rectangle::width,
-                topLeftY + this->raylib::Rectangle::width};
+                topLeftY + this->raylib::Rectangle::height};
       case Direction::EAST:
         return {topLeftX + this->raylib::Rectangle::width,
                 topLeftY,
                 topLeftX + this->raylib::Rectangle::width,
-                topLeftY + directionOffset * this->raylib::Rectangle::width};
+                topLeftY + directionOffset * this->raylib::Rectangle::height};
       case Direction::WEST:
         return {topLeftX,
                 topLeftY,
                 topLeftX,
-                topLeftY + directionOffset * this->raylib::Rectangle::width};
+                topLeftY + directionOffset * this->raylib::Rectangle::height};
     }
   }
 
