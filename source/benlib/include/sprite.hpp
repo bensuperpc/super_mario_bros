@@ -12,7 +12,7 @@
 namespace benlib
 {
 
-class sprite : public raylib::Rectangle, public raylib::Texture
+class Sprite : public raylib::Rectangle, public raylib::Texture
 {
 private:
   raylib::Rectangle texture_source_rect;
@@ -27,19 +27,21 @@ private:
   bool draw_bounding_box = false;
 
 public:
-  //sprite() {}
+  //Sprite() {}
 
-  sprite(::Texture* texture) : raylib::Rectangle(0, 0, texture->width, texture->height), raylib::Texture(*texture) 
+  Sprite(::Texture* texture) : raylib::Rectangle(0, 0, texture->width, texture->height), raylib::Texture(*texture) 
   {
     texture_source_rect = raylib::Rectangle(0, 0, texture->width, texture->height);
+  }
+
+  Sprite(::Texture* texture, raylib::Rectangle texture_source_rect, raylib::Rectangle dest) : raylib::Rectangle(dest), raylib::Texture(*texture) 
+  {
+    this->texture_source_rect = texture_source_rect;
   }
   
 
 /*
-  sprite(raylib::Texture* texture, raylib::Rectangle texture_source_rect, raylib::Rectangle dest)
-      : raylib::Rectangle(dest), texture(texture), texture_source_rect(texture_source_rect) {}
-
-  sprite(const raylib::Image& image)
+  Sprite(const raylib::Image& image)
   {
     this->texture = new raylib::Texture(image);
     this->texture_source_rect = raylib::Rectangle {0,
@@ -52,7 +54,7 @@ public:
     this->raylib::Rectangle::height = static_cast<float>(image.height);
   }
 
-  sprite(std::string_view path)
+  Sprite(std::string_view path)
   {
     this->texture = new raylib::Texture(path.data());
     this->texture_source_rect = raylib::Rectangle {0,
@@ -65,7 +67,7 @@ public:
     this->raylib::Rectangle::height = static_cast<float>(texture->height);
   }
 
-  sprite(const std::string & path)
+  Sprite(const std::string & path)
   {
     this->texture = new raylib::Texture(path.data());
     this->texture_source_rect = raylib::Rectangle {0,
@@ -79,7 +81,7 @@ public:
   }
   */
 
-  ~sprite() {}
+  ~Sprite() {}
 
   void Draw()
   {

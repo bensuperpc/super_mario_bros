@@ -8,198 +8,158 @@
 
 enum class Direction
 {
-  NORTH,
-  SOUTH,
-  EAST,
-  WEST
+  UP,
+  DOWN,
+  RIGHT,
+  LEFT
 };
-
-const std::array<Direction, 4> ALL_DIRECTIONS = {
-    Direction::NORTH, Direction::SOUTH, Direction::EAST, Direction::WEST};
 
 namespace benlib
 {
 
-class entity : public benlib::sprite
+class Entity : public benlib::Sprite
 {
 private:
   bool is_alive = true;
   raylib::Vector2 speed = {0, 0};
   float velocity = 4.0;
-  float xPositionNew;
-  float yPositionNew;
+  float newPoseX;
+  float newPoseY;
 
-  Direction spriteDirection = Direction::WEST;
+  Direction spriteDirection = Direction::LEFT;
 
 public:
-  entity(::Texture* texture)
-      : benlib::sprite(texture)
+  Entity(::Texture* texture)
+      : benlib::Sprite(texture)
+  {
+  }
+
+  Entity(::Texture* texture, raylib::Rectangle texture_source_rect, raylib::Rectangle dest)
+      : benlib::Sprite(texture, texture_source_rect, dest)
   {
   }
 
   /*
-  entity(raylib::Texture* texture, raylib::Rectangle texture_source_rect,
-  raylib::Rectangle dest) : benlib::sprite(texture, texture_source_rect, dest)
+  Entity(const raylib::Image& image) : benlib::Sprite(image)
   {
 
   }
 
-  entity(const raylib::Image& image) : benlib::sprite(image)
-  {
-
-  }
-
-  entity(std::string_view path) : benlib::sprite(path)
+  Entity(std::string_view path) : benlib::Sprite(path)
   {
 
   }
   */
-  /*
-    void Move()
-    {
-      this->raylib::Rectangle::x += speed.x;
-      this->raylib::Rectangle::y += speed.y;
-    }
 
-    void Move(const float x, const float y)
-    {
-      this->raylib::Rectangle::x += x;
-      this->raylib::Rectangle::y += y;
-    }
+  ~Entity() {}
 
-    void Move(const ::Vector2& v)
-    {
-      this->raylib::Rectangle::x += v.x;
-      this->raylib::Rectangle::y += v.y;
-    }
-  */
-
-  ~entity() {}
-
-  void move(Direction direction, float frameTime, const benlib::sprite& level)
+  void Move(Direction direction, float frameTime, const benlib::Sprite& sprite)
   {
-    std::cout << "move" << std::endl;
     switch (direction) {
-      case Direction::NORTH: {
-        std::cout << "NORTH" << std::endl;
-        yPositionNew = this->y - 4.0;
+      case Direction::UP: {
+        newPoseY = this->y - this->speed.y;
 
-        std::cout << "yPositionNew: " << yPositionNew << std::endl;
-        std::cout << "this->y: " << this->y << std::endl;
-
-        if (checkCollision(direction, this->x, yPositionNew, level)) {
-          std::cout << "Collision detected" << std::endl;
-          resolveCollision(direction, this->x, yPositionNew, level);
+        if (CheckCollision(direction, this->x, newPoseY, sprite)) {
+          ResolveCollision(direction, this->x, newPoseY, sprite);
         }
-
-        this->y = yPositionNew;
+        this->y = newPoseY;
+        spriteDirection = Direction::UP;
         break;
       }
-      case Direction::SOUTH: {
-        std::cout << "SOUTH" << std::endl;
-        yPositionNew = this->y + 4.0;
+      case Direction::DOWN: {
+        newPoseY = this->y + this->speed.y;
 
-        if (checkCollision(direction, this->x, yPositionNew, level)) {
-          std::cout << "Collision detected" << std::endl;
-          resolveCollision(direction, this->x, yPositionNew, level);
+        if (CheckCollision(direction, this->x, newPoseY, sprite)) {
+          ResolveCollision(direction, this->x, newPoseY, sprite);
         }
-        this->y = yPositionNew;
+        this->y = newPoseY;
+        spriteDirection = Direction::DOWN;
         break;
       }
-      case Direction::EAST: {
-        std::cout << "EAST" << std::endl;
-        // xPositionNew = this->x + frameTime * velocity;
-        xPositionNew = this->x + 4.0;
+      case Direction::RIGHT: {
+        newPoseX = this->x + this->speed.x;
 
-        if (checkCollision(direction, xPositionNew, this->y, level)) {
-          std::cout << "Collision detected" << std::endl;
-          resolveCollision(direction, xPositionNew, this->y, level);
+        if (CheckCollision(direction, newPoseX, this->y, sprite)) {
+          ResolveCollision(direction, newPoseX, this->y, sprite);
         }
-        this->x = xPositionNew;
-        spriteDirection = Direction::EAST;
+        this->x = newPoseX;
+        spriteDirection = Direction::RIGHT;
         break;
       }
-      case Direction::WEST: {
-        std::cout << "WEST" << std::endl;
-        // xPositionNew = this->x - frameTime * velocity;
-        xPositionNew = this->x - 4.0;
+      case Direction::LEFT: {
+        newPoseX = this->x - this->speed.x;
 
-        if (checkCollision(direction, xPositionNew, this->y, level)) {
-          std::cout << "Collision detected" << std::endl;
-          resolveCollision(direction, xPositionNew, this->y, level);
+        if (CheckCollision(direction, newPoseX, this->y, sprite)) {
+          ResolveCollision(direction, newPoseX, this->y, sprite);
         }
-        this->x = xPositionNew;
-        spriteDirection = Direction::WEST;
+        this->x = newPoseX;
+        spriteDirection = Direction::LEFT;
         break;
       }
     }
   }
 
-    void resolveCollision(Direction direction,
-                        float topLeftX,
-                        float topLeftY,
-                        const benlib::sprite& level)
-  {
-    int topLeftX_i = static_cast<int>(topLeftX);
-    int topLeftY_i = static_cast<int>(topLeftY);
+    void ResolveCollision(Direction direction,
+                        float xPosition,
+                        float yPosition,
+                        const benlib::Sprite& sprite)
+   {
+    int topLeftX_i = static_cast<int>(xPosition);
+    int topLeftY_i = static_cast<int>(yPosition);
 
     switch (direction) {
-      case Direction::NORTH:
-      yPositionNew = level.GetY() + level.GetHeight();
+      case Direction::UP:
+      newPoseY = sprite.GetY() + sprite.GetHeight();
       break;
-      case Direction::SOUTH:
-        yPositionNew = level.GetY() - this->raylib::Rectangle::height;
+      case Direction::DOWN:
+        newPoseY = sprite.GetY() - this->raylib::Rectangle::height;
         break;
-      case Direction::EAST:
-        xPositionNew = level.GetX() - this->raylib::Rectangle::width;
+      case Direction::RIGHT:
+        newPoseX = sprite.GetX() - this->raylib::Rectangle::width;
         break;
-      case Direction::WEST:
-      xPositionNew = level.GetX() + level.GetHeight();
+      case Direction::LEFT:
+      newPoseX = sprite.GetX() + sprite.GetHeight();
 
       break;
     }
   }
 
-  bool checkCollision(Direction direction,
+  bool CheckCollision(Direction direction,
                       float xPosition,
                       float yPosition,
-                      const benlib::sprite& level) const
+                      const benlib::Sprite& sprite) const
   {
-    raylib::Rectangle collisionEdge = calculateEdge(direction, xPosition, yPosition, 1.0f);
-    return CheckCollisionRecs(level, collisionEdge);
+    raylib::Rectangle collisionEdge = calculateEdge(direction, xPosition, yPosition);
+    return CheckCollisionRecs(sprite, collisionEdge);
   }
 
   raylib::Rectangle calculateEdge(Direction direction,
-                     float topLeftX,
-                     float topLeftY,
-                     float directionOffset) const
+                     float xPosition,
+                     float yPosition) const
   {
-
-      std::cout << "calculateEdge" << std::endl;
-      std::cout << "topLeftX: " << topLeftX << std::endl;
-      std::cout << "topLeftY: " << topLeftY << std::endl;
     switch (direction) {
-      case Direction::NORTH:
-        return {topLeftX,
-                topLeftY,
-                topLeftX + directionOffset * this->raylib::Rectangle::width,
-                topLeftY};
-      case Direction::SOUTH:
-        return {topLeftX,
-                topLeftY + this->raylib::Rectangle::height,
-                topLeftX + directionOffset * this->raylib::Rectangle::width,
-                topLeftY + this->raylib::Rectangle::height};
-      case Direction::EAST:
-        return {topLeftX + this->raylib::Rectangle::width,
-                topLeftY,
-                topLeftX + this->raylib::Rectangle::width,
-                topLeftY + directionOffset * this->raylib::Rectangle::height};
-      case Direction::WEST:
-        return {topLeftX,
-                topLeftY,
-                topLeftX,
-                topLeftY + directionOffset * this->raylib::Rectangle::height};
+      case Direction::UP:
+        return {xPosition,
+                yPosition,
+                this->raylib::Rectangle::width,
+                this->raylib::Rectangle::height};
+      case Direction::DOWN:
+        return {xPosition,
+                yPosition,
+                this->raylib::Rectangle::width,
+                this->raylib::Rectangle::height};
+      case Direction::RIGHT:
+        return {xPosition,
+                yPosition,
+                this->raylib::Rectangle::width,
+                this->raylib::Rectangle::height};
+      case Direction::LEFT:
+        return {xPosition,
+                yPosition,
+                this->raylib::Rectangle::width,
+                this->raylib::Rectangle::height};
     }
+    return {0, 0, 0, 0};
   }
 
   GETTERSETTER(::Vector2, Speed, speed)

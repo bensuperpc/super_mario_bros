@@ -9,7 +9,7 @@
 #include "lib.hpp"
 #include "raylib-cpp.hpp"
 
-void updatePlayer(benlib::entity* player, float delta, const benlib::sprite& level);
+void updatePlayer(benlib::Entity* player, float frameTime, const benlib::Sprite& level);
 
 auto main() -> int
 {
@@ -39,24 +39,24 @@ auto main() -> int
 
   raylib::Texture logo(image);
 
-  benlib::entity player(&logo);
+  benlib::Entity player(&logo);
 
   //player.SetSourceRect(raylib::Rectangle {4, 52, 32, 16});
   //player.Resize(32, 16);
 
   player.SetPosition(raylib::Vector2 {screenWidth / 2, screenHeight / 2});
-  player.SetDrawBoundingBox(true);
+  //player.SetDrawBoundingBox(true);
 
-  player.SetSpeed(raylib::Vector2 {0, 2.0});
+  player.SetSpeed(raylib::Vector2 {4.0, 4.0});
 
   raylib::Image image_ground_texture (asset_path + "sprite sheets/blocks/Block.png");
 
   raylib::Texture ground_texture(image_ground_texture);
 
-  benlib::sprite ground(&ground_texture);
+  benlib::Sprite ground(&ground_texture);
   ground.SetSourceRect(raylib::Rectangle {4, 340, 16, 15});
   ground.Resize(64, 64);
-  ground.SetDrawBoundingBox(true);
+  //ground.SetDrawBoundingBox(true);
 
   Vector2 mousePosition = {0.0f, -0.0f};
   // Image imageBunny = LoadImageFromMemory(".png", wabbit_alpha_png,
@@ -79,36 +79,7 @@ auto main() -> int
 
     mousePosition = GetMousePosition();
 
-    /*
-
-    if(player.CheckCollision(ground))
-    {
-      player.SetY(ground.GetY() - player.GetHeight());
-      player.SetSpeed(raylib::Vector2 {player.GetSpeed().x, 0.0f});
-    } else {
-      player.Move();
-    }
-    */
-
     updatePlayer(&player, frameTime, ground);
-
-    /*
-    if (IsKeyDown(KEY_RIGHT)) {
-        player.Move(4.0, 0);
-    }
-
-    if (IsKeyDown(KEY_LEFT)) {
-        player.Move(-4.0, 0.0);
-    }
-
-    if (IsKeyDown(KEY_UP)) {
-        player.Move(0.0, -4.0);
-    }
-
-    if (IsKeyDown(KEY_DOWN)) {
-        player.Move(0.0, 4.0);
-    }
-    */
 
     camera.target = (Vector2) {player.GetX() + player.Rectangle::GetWidth() / 2.0f,
                                player.GetY() + player.Rectangle::GetHeight() / 2.0f};
@@ -145,8 +116,6 @@ auto main() -> int
 
     player.Draw();
 
-    DrawRectangleRec(raylib::Rectangle(100, 100, 200, 200), YELLOW);
-
     DrawLine((int)camera.target.x,
              -screenHeight * 10,
              (int)camera.target.x,
@@ -177,6 +146,7 @@ auto main() -> int
 
     DrawText(WorldCoordinates.c_str(), 650, 30, 20, RED);
 
+    /*
     DrawRectangle(10, 10, 250, 113, Fade(SKYBLUE, 0.5f));
     DrawRectangleLines(10, 10, 250, 113, BLUE);
 
@@ -185,6 +155,7 @@ auto main() -> int
     DrawText("- Mouse Wheel to Zoom in-out", 40, 60, 10, DARKGRAY);
     DrawText("- A / S to Rotate", 40, 80, 10, DARKGRAY);
     DrawText("- R to reset Zoom and Rotation", 40, 100, 10, DARKGRAY);
+    */
 
     EndDrawing();
   }
@@ -196,16 +167,15 @@ auto main() -> int
 
 
 
-void updatePlayer(benlib::entity* player, float delta, const benlib::sprite& level)
+void updatePlayer(benlib::Entity* player, float frameTime, const benlib::Sprite& level)
 {
-  //std::cout << "player.GetX(): " << player->GetX() << std::endl;
   if (IsKeyDown(KEY_Z) || IsKeyDown(KEY_UP))
-    player->move(Direction::NORTH, delta, level);
+    player->Move(Direction::UP, frameTime, level);
   if (IsKeyDown(KEY_Q) || IsKeyDown(KEY_LEFT))
-    player->move(Direction::WEST, delta, level);
+    player->Move(Direction::LEFT, frameTime, level);
   if (IsKeyDown(KEY_S) || IsKeyDown(KEY_DOWN))
-    player->move(Direction::SOUTH, delta, level);
+    player->Move(Direction::DOWN, frameTime, level);
   if (IsKeyDown(KEY_D) || IsKeyDown(KEY_RIGHT))
-    player->move(Direction::EAST, delta, level);
+    player->Move(Direction::RIGHT, frameTime, level);
 }
 
