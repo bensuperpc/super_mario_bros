@@ -30,12 +30,7 @@ auto main() -> int
 
   raylib::Image image(asset_path + "sprite sheets/creatures/mario/Mario.png");
   image.Crop(4, 52, 32, 16);
-
-  std::cout << "image.width: " << image.width << std::endl;
-  std::cout << "image.height: " << image.height << std::endl;
   image.RotateCCW();
-    std::cout << "image.width: " << image.width << std::endl;
-  std::cout << "image.height: " << image.height << std::endl;
 
   raylib::Texture logo(image);
 
@@ -44,7 +39,7 @@ auto main() -> int
   //player.SetSourceRect(raylib::Rectangle {4, 52, 32, 16});
   //player.Resize(32, 16);
 
-  player.SetPosition(raylib::Vector2 {screenWidth / 2, screenHeight / 2});
+  player.SetPosition(raylib::Vector2 {128, 128});
   //player.SetDrawBoundingBox(true);
 
   player.SetSpeed(raylib::Vector2 {4.0, 4.0});
@@ -55,7 +50,7 @@ auto main() -> int
 
   benlib::Sprite ground(&ground_texture);
   ground.SetSourceRect(raylib::Rectangle {4, 340, 16, 15});
-  ground.Resize(64, 64);
+  ground.Resize(32, 32);
   //ground.SetDrawBoundingBox(true);
 
   Vector2 mousePosition = {0.0f, -0.0f};
