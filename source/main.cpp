@@ -9,7 +9,7 @@
 #include "lib.hpp"
 #include "raylib-cpp.hpp"
 
-#define MAX_BUILDINGS 100
+void updatePlayer(benlib::entity* player, float delta, const benlib::sprite& level);
 
 auto main() -> int
 {
@@ -45,7 +45,7 @@ auto main() -> int
   //player.Resize(32, 16);
 
   player.SetPosition(raylib::Vector2 {screenWidth / 2, screenHeight / 2});
-  //player.SetDrawBoundingBox(true);
+  player.SetDrawBoundingBox(true);
 
   player.SetSpeed(raylib::Vector2 {0, 2.0});
 
@@ -54,8 +54,9 @@ auto main() -> int
   raylib::Texture ground_texture(image_ground_texture);
 
   benlib::sprite ground(&ground_texture);
-  ground.SetSourceRect(raylib::Rectangle {4, 340, 16, 16});
+  ground.SetSourceRect(raylib::Rectangle {4, 340, 16, 15});
   ground.Resize(64, 64);
+  ground.SetDrawBoundingBox(true);
 
   Vector2 mousePosition = {0.0f, -0.0f};
   // Image imageBunny = LoadImageFromMemory(".png", wabbit_alpha_png,
@@ -74,28 +75,40 @@ auto main() -> int
 
   while (!WindowShouldClose()) {
 
+    float frameTime = GetFrameTime();
+
     mousePosition = GetMousePosition();
 
-    if(!player.CheckCollision(ground))
+    /*
+
+    if(player.CheckCollision(ground))
     {
+      player.SetY(ground.GetY() - player.GetHeight());
+      player.SetSpeed(raylib::Vector2 {player.GetSpeed().x, 0.0f});
+    } else {
       player.Move();
     }
+    */
 
+    updatePlayer(&player, frameTime, ground);
+
+    /*
     if (IsKeyDown(KEY_RIGHT)) {
         player.Move(4.0, 0);
     }
 
     if (IsKeyDown(KEY_LEFT)) {
-        player.Move(-4.0, 0);
+        player.Move(-4.0, 0.0);
     }
 
     if (IsKeyDown(KEY_UP)) {
-        player.Move(0, -4.0);
+        player.Move(0.0, -4.0);
     }
 
     if (IsKeyDown(KEY_DOWN)) {
-        player.Move(0, 4.0);
+        player.Move(0.0, 4.0);
     }
+    */
 
     camera.target = (Vector2) {player.GetX() + player.Rectangle::GetWidth() / 2.0f,
                                player.GetY() + player.Rectangle::GetHeight() / 2.0f};
@@ -180,3 +193,19 @@ auto main() -> int
 
   return 0;
 }
+
+
+
+void updatePlayer(benlib::entity* player, float delta, const benlib::sprite& level)
+{
+  //std::cout << "player.GetX(): " << player->GetX() << std::endl;
+  if (IsKeyDown(KEY_Z) || IsKeyDown(KEY_UP))
+    player->move(Direction::NORTH, delta, level);
+  if (IsKeyDown(KEY_Q) || IsKeyDown(KEY_LEFT))
+    player->move(Direction::WEST, delta, level);
+  if (IsKeyDown(KEY_S) || IsKeyDown(KEY_DOWN))
+    player->move(Direction::SOUTH, delta, level);
+  if (IsKeyDown(KEY_D) || IsKeyDown(KEY_RIGHT))
+    player->move(Direction::EAST, delta, level);
+}
+

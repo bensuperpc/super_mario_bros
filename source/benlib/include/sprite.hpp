@@ -16,8 +16,6 @@ class sprite : public raylib::Rectangle, public raylib::Texture
 {
 private:
   raylib::Rectangle texture_source_rect;
-
-  raylib::Vector2 speed = {0, 0};
   const float rotation = 0.0;
 
   const raylib::Vector2 origin = {0, 0};
@@ -29,12 +27,13 @@ private:
   bool draw_bounding_box = false;
 
 public:
-  sprite() {}
+  //sprite() {}
 
   sprite(::Texture* texture) : raylib::Rectangle(0, 0, texture->width, texture->height), raylib::Texture(*texture) 
   {
     texture_source_rect = raylib::Rectangle(0, 0, texture->width, texture->height);
   }
+  
 
 /*
   sprite(raylib::Texture* texture, raylib::Rectangle texture_source_rect, raylib::Rectangle dest)
@@ -88,26 +87,8 @@ public:
 
     if (draw_bounding_box)
     {
-      this->raylib::Rectangle::DrawLines(BLACK);
+      this->raylib::Rectangle::DrawLines(BLACK, 0.5f);
     }
-  }
-
-  void Move()
-  {
-    this->raylib::Rectangle::x += speed.x;
-    this->raylib::Rectangle::y += speed.y;
-  }
-
-  void Move(const float x, const float y)
-  {
-    this->raylib::Rectangle::x += x;
-    this->raylib::Rectangle::y += y;
-  }
-
-  void Move(const ::Vector2& v)
-  {
-    this->raylib::Rectangle::x += v.x;
-    this->raylib::Rectangle::y += v.y;
   }
 
   void Resize(const float width, const float height)
@@ -136,7 +117,11 @@ public:
     this->raylib::Rectangle::y = value.y;
   }
 
-  GETTERSETTER(::Vector2, Speed, speed)
+  GETTERSETTER(float, Height, this->raylib::Rectangle::height)
+  GETTERSETTER(float, Width, this->raylib::Rectangle::width)
+  GETTERSETTER(float, X, this->raylib::Rectangle::x)
+  GETTERSETTER(float, Y, this->raylib::Rectangle::y)
+
   GETTERSETTER(uint64_t, Id, id)
   GETTERSETTER(::Color, Tint, tint)
 
