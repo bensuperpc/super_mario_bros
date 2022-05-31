@@ -28,6 +28,12 @@ void play_intro_benlib(const int screenWidth, const int screenHeight)
     int state = 0;                  // Tracking animation states (State Machine)
     float alpha = 1.0f;             // Useful for fading
 
+
+    bool soundISPlayed = false;
+
+    const char sound_path[] = "../3rd-party/raylib-src/examples/audio/resources/target.ogg";
+    Sound fxOgg = LoadSound(sound_path);
+
         // Main game loop
     while (!WindowShouldClose())    // Detect window close button or ESC key
     {
@@ -59,6 +65,11 @@ void play_intro_benlib(const int screenWidth, const int screenHeight)
         }
         else if (state == 3)            // State 3: Letters appearing (one by one)
         {
+            if(!soundISPlayed){
+                PlaySoundMulti(fxOgg);
+                soundISPlayed = true;
+            }
+            
             framesCounter++;
 
             if (framesCounter/12)       // Every 12 frames, one more letter!

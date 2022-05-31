@@ -85,7 +85,9 @@ public:
 
   void Draw()
   {
-    this->raylib::Texture::Draw(this->texture_source_rect, *this, this->origin, this->rotation, this->tint);
+    if (is_visible) {
+      this->raylib::Texture::Draw(this->texture_source_rect, *this, this->origin, this->rotation, this->tint);
+    }
 
     if (draw_bounding_box)
     {

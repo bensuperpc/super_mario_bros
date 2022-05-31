@@ -1,3 +1,6 @@
+#ifndef BENLIB_ENTITY_HPP
+#define BENLIB_ENTITY_HPP
+
 #include <array>
 #include <iostream>
 #include <string>
@@ -5,14 +8,7 @@
 #include <vector>
 
 #include "sprite.hpp"
-
-enum class Direction
-{
-  UP,
-  DOWN,
-  RIGHT,
-  LEFT
-};
+#include "direction.h"
 
 namespace benlib
 {
@@ -20,7 +16,6 @@ namespace benlib
 class Entity : public benlib::Sprite
 {
 private:
-  bool is_alive = true;
   raylib::Vector2 speed = {0, 0};
   float gravity = 2.0;
   bool is_gravity_affected = true;
@@ -61,13 +56,13 @@ public:
     }
   }
 
-  void Move(Direction direction, float frameTime, const benlib::Sprite& sprite)
+  void Move(const Direction direction, const float frameTime, const benlib::Sprite& sprite)
   {
     switch (direction) {
       case Direction::UP: {
         auto newPoseY = this->y - this->speed.y;
 
-        if (CheckCollision(direction, this->x, newPoseY, sprite)) {
+        if (this->CheckCollision(direction, this->x, newPoseY, sprite)) {
           ResolveCollision(direction, this->x, newPoseY, sprite);
         }
         this->y = newPoseY;
@@ -77,7 +72,7 @@ public:
       case Direction::DOWN: {
         auto newPoseY = this->y + this->speed.y;
 
-        if (CheckCollision(direction, this->x, newPoseY, sprite)) {
+        if (this->CheckCollision(direction, this->x, newPoseY, sprite)) {
           ResolveCollision(direction, this->x, newPoseY, sprite);
         }
         this->y = newPoseY;
@@ -87,7 +82,7 @@ public:
       case Direction::RIGHT: {
         auto newPoseX = this->x + this->speed.x;
 
-        if (CheckCollision(direction, newPoseX, this->y, sprite)) {
+        if (this->CheckCollision(direction, newPoseX, this->y, sprite)) {
           ResolveCollision(direction, newPoseX, this->y, sprite);
         }
         this->x = newPoseX;
@@ -97,7 +92,7 @@ public:
       case Direction::LEFT: {
         auto newPoseX = this->x - this->speed.x;
 
-        if (CheckCollision(direction, newPoseX, this->y, sprite)) {
+        if (this->CheckCollision(direction, newPoseX, this->y, sprite)) {
           ResolveCollision(direction, newPoseX, this->y, sprite);
         }
         this->x = newPoseX;
@@ -178,3 +173,5 @@ public:
 };
 
 };  // namespace benlib
+
+#endif

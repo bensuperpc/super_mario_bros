@@ -9,16 +9,23 @@
 #include "lib.hpp"
 #include "raylib-cpp.hpp"
 
-void updatePlayer(benlib::Entity* player, float frameTime, const benlib::Sprite& level);
+void updatePlayer(benlib::Entity* player,
+                  float frameTime,
+                  const benlib::Sprite& level);
 
 auto main() -> int
 {
   const int screenWidth = 800;
   const int screenHeight = 450;
 
+  SetConfigFlags(FLAG_WINDOW_RESIZABLE);
+
   raylib::Window window(screenWidth,
                         screenHeight,
                         "raylib [shapes] example - raylib logo animation");
+
+  raylib::AudioDevice audiodevice;
+  
   SetTargetFPS(60);
 
   play_intro_raylib(screenWidth, screenHeight);
@@ -26,7 +33,6 @@ auto main() -> int
   play_intro_benlib(screenWidth, screenHeight);
 
   const std::string asset_path = "../3rd-party/smb_assset-src/";
-
 
   raylib::Image image(asset_path + "sprite sheets/creatures/mario/Mario.png");
   image.Crop(4, 52, 32, 16);
@@ -36,22 +42,23 @@ auto main() -> int
 
   benlib::Entity player(&logo);
 
-  //player.SetSourceRect(raylib::Rectangle {4, 52, 32, 16});
-  //player.Resize(32, 16);
+  // player.SetSourceRect(raylib::Rectangle {4, 52, 32, 16});
+  // player.Resize(32, 16);
 
   player.SetPosition(raylib::Vector2 {128, 128});
-  //player.SetDrawBoundingBox(true);
+  // player.SetDrawBoundingBox(true);
 
   player.SetSpeed(raylib::Vector2 {4.0, 4.0});
 
-  raylib::Image image_ground_texture (asset_path + "sprite sheets/blocks/Block.png");
+  raylib::Image image_ground_texture(asset_path
+                                     + "sprite sheets/blocks/Block.png");
 
   raylib::Texture ground_texture(image_ground_texture);
 
   benlib::Sprite ground(&ground_texture);
   ground.SetSourceRect(raylib::Rectangle {4, 340, 16, 15});
   ground.Resize(32, 32);
-  //ground.SetDrawBoundingBox(true);
+  // ground.SetDrawBoundingBox(true);
 
   Vector2 mousePosition = {0.0f, -0.0f};
   // Image imageBunny = LoadImageFromMemory(".png", wabbit_alpha_png,
@@ -59,8 +66,9 @@ auto main() -> int
   // LoadTextureFromImage(imageBunny);
 
   raylib::Camera2D camera = {};
-  camera.target = (Vector2) {player.GetX() + player.Rectangle::GetWidth() / 2.0f,
-                               player.GetY() + player.Rectangle::GetHeight() / 2.0f};
+  camera.target =
+      (Vector2) {player.GetX() + player.Rectangle::GetWidth() / 2.0f,
+                 player.GetY() + player.Rectangle::GetHeight() / 2.0f};
 
   camera.offset = (Vector2) {screenWidth / 2.0f, screenHeight / 2.0f};
   camera.rotation = 0.0f;
@@ -69,15 +77,28 @@ auto main() -> int
   SetTargetFPS(60);
 
   while (!WindowShouldClose()) {
-
     float frameTime = GetFrameTime();
-
     mousePosition = GetMousePosition();
+
+    /*
+    if (IsKeyPressed(KEY_F11))
+    {
+      int display = GetCurrentMonitor();
+
+      if (IsWindowFullscreen()) {
+        SetWindowSize(screenWidth, screenHeight);
+      } else {
+        SetWindowSize(GetMonitorWidth(display), GetMonitorHeight(display));
+      }
+      ToggleFullscreen();
+    }
+    */
 
     updatePlayer(&player, frameTime, ground);
 
-    camera.target = (Vector2) {player.GetX() + player.Rectangle::GetWidth() / 2.0f,
-                               player.GetY() + player.Rectangle::GetHeight() / 2.0f};
+    camera.target =
+        (Vector2) {player.GetX() + player.Rectangle::GetWidth() / 2.0f,
+                   player.GetY() + player.Rectangle::GetHeight() / 2.0f};
 
     if (IsKeyDown(KEY_A))
       camera.rotation--;
@@ -160,9 +181,9 @@ auto main() -> int
   return 0;
 }
 
-
-
-void updatePlayer(benlib::Entity* player, float frameTime, const benlib::Sprite& level)
+void updatePlayer(benlib::Entity* player,
+                  float frameTime,
+                  const benlib::Sprite& level)
 {
   if (IsKeyDown(KEY_Z) || IsKeyDown(KEY_UP))
     player->Move(Direction::UP, frameTime, level);
@@ -173,4 +194,3 @@ void updatePlayer(benlib::Entity* player, float frameTime, const benlib::Sprite&
   if (IsKeyDown(KEY_D) || IsKeyDown(KEY_RIGHT))
     player->Move(Direction::RIGHT, frameTime, level);
 }
-
