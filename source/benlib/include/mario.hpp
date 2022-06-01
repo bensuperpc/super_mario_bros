@@ -6,24 +6,15 @@
 namespace benlib
 {
 
-
 class Mario : public Entity
 {
 private:
-
 public:
+  Mario() {}
 
-Mario()
-{
-}
-
-~Mario()
-{
-}
-
+  ~Mario() {}
 };
 
-} // namespace benlib
-
+}  // namespace benlib
 
 #endif

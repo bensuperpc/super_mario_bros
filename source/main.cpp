@@ -2,16 +2,18 @@
 #include <string>
 #include <thread>
 
+#include "block.hpp"
 #include "entity.hpp"
 #include "intro/benlib_intro.h"
 #include "intro/raylib_cpp_intro.h"
 #include "intro/raylib_intro.h"
+#include "level.hpp"
 #include "lib.hpp"
 #include "raylib-cpp.hpp"
 
 void updatePlayer(benlib::Entity* player,
                   float frameTime,
-                  const benlib::Sprite& level);
+                  const benlib::Level* level);
 
 auto main() -> int
 {
@@ -25,15 +27,16 @@ auto main() -> int
                         "raylib [shapes] example - raylib logo animation");
 
   raylib::AudioDevice audiodevice;
-  
+
   SetTargetFPS(60);
 
   play_intro_raylib(screenWidth, screenHeight);
   play_intro_raylib_cpp(screenWidth, screenHeight);
   play_intro_benlib(screenWidth, screenHeight);
 
-  const std::string asset_path = "../3rd-party/smb_assset-src/";
+  auto level = benlib::Level();
 
+  const std::string asset_path = "../3rd-party/smb_assset-src/";
   raylib::Image image(asset_path + "sprite sheets/creatures/mario/Mario.png");
   image.Crop(4, 52, 32, 16);
   image.RotateCCW();
@@ -45,17 +48,27 @@ auto main() -> int
   // player.SetSourceRect(raylib::Rectangle {4, 52, 32, 16});
   // player.Resize(32, 16);
 
-  player.SetPosition(raylib::Vector2 {128, 128});
+  player.SetPosition(raylib::Vector2 {0, -48});
   // player.SetDrawBoundingBox(true);
-
   player.SetSpeed(raylib::Vector2 {4.0, 4.0});
 
   raylib::Image image_ground_texture(asset_path
                                      + "sprite sheets/blocks/Block.png");
-
   raylib::Texture ground_texture(image_ground_texture);
 
-  benlib::Sprite ground(&ground_texture);
+  for (int i = 0; i < 64; ++i) {
+    for (int j = 0; j < 2; ++j) {
+      auto block = new benlib::Block(&ground_texture);
+      // auto block = std::make_unique<benlib::Block>(&ground_texture);
+
+      block->SetPosition(raylib::Vector2 {i * 16, j * 16});
+      block->SetSourceRect(raylib::Rectangle {4, 340, 16, 15});
+      block->Resize(16, 16);
+      level.AddBlock(block);
+    }
+  }
+
+  benlib::Block ground(&ground_texture);
   ground.SetSourceRect(raylib::Rectangle {4, 340, 16, 15});
   ground.Resize(32, 32);
   // ground.SetDrawBoundingBox(true);
@@ -94,7 +107,7 @@ auto main() -> int
     }
     */
 
-    updatePlayer(&player, frameTime, ground);
+    updatePlayer(&player, frameTime, &level);
 
     camera.target =
         (Vector2) {player.GetX() + player.Rectangle::GetWidth() / 2.0f,
@@ -143,7 +156,9 @@ auto main() -> int
              (int)camera.target.y,
              GREEN);
 
-    ground.Draw();
+    level.Draw();
+
+    // ground.Draw();
 
     EndMode2D();
 
@@ -183,7 +198,7 @@ auto main() -> int
 
 void updatePlayer(benlib::Entity* player,
                   float frameTime,
-                  const benlib::Sprite& level)
+                  const benlib::Level* level)
 {
   if (IsKeyDown(KEY_Z) || IsKeyDown(KEY_UP))
     player->Move(Direction::UP, frameTime, level);

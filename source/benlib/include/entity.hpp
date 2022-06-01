@@ -7,15 +7,16 @@
 #include <string_view>
 #include <vector>
 
-#include "sprite.hpp"
 #include "direction.h"
+#include "level.hpp"
+#include "sprite.hpp"
 
 namespace benlib
 {
 
 class Entity : public benlib::Sprite
 {
-private:
+protected:
   raylib::Vector2 speed = {0, 0};
   float gravity = 2.0;
   bool is_gravity_affected = true;
@@ -23,6 +24,11 @@ private:
   Direction spriteDirection = Direction::LEFT;
 
 public:
+  Entity()
+      : benlib::Sprite()
+  {
+  }
+
   Entity(::Texture* texture)
       : benlib::Sprite(texture)
   {
@@ -56,48 +62,68 @@ public:
     }
   }
 
-  void Move(const Direction direction, const float frameTime, const benlib::Sprite& sprite)
+  void Move(const Direction direction,
+            const float frameTime,
+            const benlib::Level* level)
   {
-    switch (direction) {
-      case Direction::UP: {
-        auto newPoseY = this->y - this->speed.y;
+    if (this->is_enable) {
+      switch (direction) {
+        case Direction::UP: {
+          auto newPoseY = this->y - this->speed.y;
+          const raylib::Rectangle collisionEdge =
+              calculateEdge(direction, this->x, newPoseY);
 
-        if (this->CheckCollision(direction, this->x, newPoseY, sprite)) {
-          ResolveCollision(direction, this->x, newPoseY, sprite);
+          for (auto& block : level->blocks) {
+            if (CheckCollisionRecs(*block.get(), collisionEdge)) {
+              ResolveCollision(direction, this->x, newPoseY, block.get());
+            }
+          }
+          this->y = newPoseY;
+          spriteDirection = Direction::UP;
+          break;
         }
-        this->y = newPoseY;
-        spriteDirection = Direction::UP;
-        break;
-      }
-      case Direction::DOWN: {
-        auto newPoseY = this->y + this->speed.y;
+        case Direction::DOWN: {
+          auto newPoseY = this->y + this->speed.y;
+          const raylib::Rectangle collisionEdge =
+              calculateEdge(direction, this->x, newPoseY);
 
-        if (this->CheckCollision(direction, this->x, newPoseY, sprite)) {
-          ResolveCollision(direction, this->x, newPoseY, sprite);
+          for (auto& block : level->blocks) {
+            if (CheckCollisionRecs(*block.get(), collisionEdge)) {
+              ResolveCollision(direction, this->x, newPoseY, block.get());
+            }
+          }
+          this->y = newPoseY;
+          spriteDirection = Direction::DOWN;
+          break;
         }
-        this->y = newPoseY;
-        spriteDirection = Direction::DOWN;
-        break;
-      }
-      case Direction::RIGHT: {
-        auto newPoseX = this->x + this->speed.x;
+        case Direction::RIGHT: {
+          auto newPoseX = this->x + this->speed.x;
+          const raylib::Rectangle collisionEdge =
+              calculateEdge(direction, newPoseX, this->y);
 
-        if (this->CheckCollision(direction, newPoseX, this->y, sprite)) {
-          ResolveCollision(direction, newPoseX, this->y, sprite);
+          for (auto& block : level->blocks) {
+            if (CheckCollisionRecs(*block.get(), collisionEdge)) {
+              ResolveCollision(direction, newPoseX, this->y, block.get());
+            }
+          }
+          this->x = newPoseX;
+          spriteDirection = Direction::RIGHT;
+          break;
         }
-        this->x = newPoseX;
-        spriteDirection = Direction::RIGHT;
-        break;
-      }
-      case Direction::LEFT: {
-        auto newPoseX = this->x - this->speed.x;
+        case Direction::LEFT: {
+          auto newPoseX = this->x - this->speed.x;
+          const raylib::Rectangle collisionEdge =
+              calculateEdge(direction, newPoseX, this->y);
 
-        if (this->CheckCollision(direction, newPoseX, this->y, sprite)) {
-          ResolveCollision(direction, newPoseX, this->y, sprite);
+          for (auto& block : level->blocks) {
+            if (CheckCollisionRecs(*block.get(), collisionEdge)) {
+              ResolveCollision(direction, newPoseX, this->y, block.get());
+            }
+          }
+          this->x = newPoseX;
+          spriteDirection = Direction::LEFT;
+          break;
         }
-        this->x = newPoseX;
-        spriteDirection = Direction::LEFT;
-        break;
       }
     }
   }
@@ -105,36 +131,26 @@ public:
   void ResolveCollision(const Direction direction,
                         float& xPosition,
                         float& yPosition,
-                        const benlib::Sprite& sprite)
+                        const benlib::Sprite* sprite)
   {
     int topLeftX_i = static_cast<int>(xPosition);
     int topLeftY_i = static_cast<int>(yPosition);
 
     switch (direction) {
       case Direction::UP:
-        yPosition = sprite.GetY() + sprite.GetHeight();
+        yPosition = sprite->GetY() + sprite->GetHeight();
         break;
       case Direction::DOWN:
-        yPosition = sprite.GetY() - this->raylib::Rectangle::height;
+        yPosition = sprite->GetY() - this->raylib::Rectangle::height;
         break;
       case Direction::RIGHT:
-        xPosition = sprite.GetX() - this->raylib::Rectangle::width;
+        xPosition = sprite->GetX() - this->raylib::Rectangle::width;
         break;
       case Direction::LEFT:
-        xPosition = sprite.GetX() + sprite.GetHeight();
+        xPosition = sprite->GetX() + sprite->GetHeight();
 
         break;
     }
-  }
-
-  bool CheckCollision(const Direction direction,
-                      const float xPosition,
-                      const float yPosition,
-                      const benlib::Sprite& sprite) const
-  {
-    raylib::Rectangle collisionEdge =
-        calculateEdge(direction, xPosition, yPosition);
-    return CheckCollisionRecs(sprite, collisionEdge);
   }
 
   raylib::Rectangle calculateEdge(const Direction direction,

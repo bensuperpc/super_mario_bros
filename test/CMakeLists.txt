@@ -53,15 +53,13 @@ if(NOT WIN32)
 
   FetchContent_Declare(
     googletest
-    FETCHCONTENT_BASE_DIR ${CMAKE_BINARY_DIR}/_deps
     GIT_REPOSITORY https://github.com/google/googletest.git
-    GIT_TAG main)
+    GIT_TAG 548b13dc3c02b93f60eeff9a0cc6e11c1ea722ca) # 01-06-2022
 
   FetchContent_Declare(
     googlebenchmark
-    FETCHCONTENT_BASE_DIR ${CMAKE_BINARY_DIR}/_deps
     GIT_REPOSITORY https://github.com/google/benchmark.git
-    GIT_TAG main)
+    GIT_TAG 6d50251d8e6ed6b7f6eb1e12c558d2808fb4ddaa) # 01-06-2022
 
   # Disable tests on gtest
   set(gtest_build_tests
@@ -95,8 +93,6 @@ if(NOT WIN32)
   FetchContent_MakeAvailable(googletest googlebenchmark)
 
   # include_directories(${googletest_SOURCE_DIR}/googletest/include/gtest)
-
-  find_package(CUDAToolkit 11.0)
 
   # Add tests
   #add_test_fn(find_string_inv_test)

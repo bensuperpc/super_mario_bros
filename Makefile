@@ -77,7 +77,7 @@ lint:
 	cmake -P cmake/spell.cmake
 
 format:
-	time find . -regex '.*\.\(cpp\|cxx\|hpp\|hxx\|c\|h\|cu\|cuh\|cuhpp\|tpp\)' -not -path 'build/*' | parallel clang-format -style=file -i {} \;
+	time find . -regex '.*\.\(cpp\|cxx\|hpp\|hxx\|c\|h\|cu\|cuh\|cuhpp\|tpp\)' -not -path '*/build/*' | parallel clang-format -style=file -i {} \;
 
 clean:
 	rm -rf build

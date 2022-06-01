@@ -56,17 +56,16 @@ if (NOT raylib_cpp_FOUND)
     FetchContent_MakeAvailable(raylib_cpp)
 endif()
 
-FetchContent_Declare(nbnet
-    GIT_REPOSITORY https://github.com/nathhB/nbnet.git
-    GIT_TAG c68e32f8fd96ad66cd2da4224e35c55880c1026f # 2022-05-31
-    CONFIGURE_COMMAND ""
-    BUILD_COMMAND ""
-    INSTALL_COMMAND ""
-    TEST_COMMAND ""
-
-)
-FetchContent_MakeAvailable(nbnet)
-include_directories("${nbnet_SOURCE_DIR}")
+find_package(json QUIET)
+if (NOT json_FOUND)
+    FetchContent_Declare(json
+        GIT_REPOSITORY https://github.com/nlohmann/json.git
+        GIT_TAG 6b97599a274b9b72caffa1332d5384c9aac27590 # 2022-05-31
+    )
+    set(BUILD_RAYLIB_CPP_EXAMPLES OFF CACHE BOOL "" FORCE)
+    FetchContent_MakeAvailable(json)
+    # nlohmann_json::nlohmann_json
+endif()
 
 FetchContent_Declare(bs-thread-pool
     GIT_REPOSITORY https://github.com/bshoshany/thread-pool.git
@@ -78,6 +77,18 @@ FetchContent_Declare(bs-thread-pool
 )
 FetchContent_MakeAvailable(bs-thread-pool)
 include_directories("${bs-thread-pool_SOURCE_DIR}")
+
+FetchContent_Declare(nbnet
+    GIT_REPOSITORY https://github.com/nathhB/nbnet.git
+    GIT_TAG c68e32f8fd96ad66cd2da4224e35c55880c1026f # 2022-05-31
+    CONFIGURE_COMMAND ""
+    BUILD_COMMAND ""
+    INSTALL_COMMAND ""
+    TEST_COMMAND ""
+
+)
+FetchContent_MakeAvailable(nbnet)
+include_directories("${nbnet_SOURCE_DIR}")
 
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
