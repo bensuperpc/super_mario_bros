@@ -17,55 +17,21 @@ include(cmake/variables.cmake)
 
 # ---- Enable ccache ----
 include(cmake/ccache.cmake)
+include(cmake/lto.cmake)
 
 # ---- Download and install dependencies
 set(FETCHCONTENT_BASE_DIR "${CMAKE_BINARY_DIR}/3rd-party" CACHE BOOL "" FORCE)
 set(FETCHCONTENT_QUIET FALSE CACHE BOOL "" FORCE)
 
+
+
+include(cmake/lib/raylib.cmake)
+include(cmake/lib/raygui.cmake)
+include(cmake/lib/raylib-cpp.cmake)
+
+include(cmake/lib/json.cmake)
+
 include(FetchContent)
-
-find_package(raylib QUIET)
-if (NOT raylib_FOUND)
-    FetchContent_Declare(raygui
-        GIT_REPOSITORY https://github.com/raysan5/raygui.git
-        GIT_TAG 3.1
-    )
-    FetchContent_MakeAvailable(raygui)
-endif()
-
-find_package(raylib QUIET)
-if (NOT raylib_FOUND)
-    FetchContent_Declare(raylib
-        GIT_REPOSITORY https://github.com/raysan5/raylib.git
-        GIT_TAG 4.0.0
-    )
-
-    set(BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
-    set(BUILD_GAMES    OFF CACHE BOOL "" FORCE)
-    set(INCLUDE_EVERYTHING ON CACHE BOOL "" FORCE)
-    FetchContent_MakeAvailable(raylib)
-endif()
-
-find_package(raylib_cpp QUIET)
-if (NOT raylib_cpp_FOUND)
-    FetchContent_Declare(raylib_cpp
-        GIT_REPOSITORY https://github.com/RobLoach/raylib-cpp.git
-        GIT_TAG e7731d306ead3b5b9dd1703d5ee8f4341a7a695c # 2022-05-31
-    )
-    set(BUILD_RAYLIB_CPP_EXAMPLES OFF CACHE BOOL "" FORCE)
-    FetchContent_MakeAvailable(raylib_cpp)
-endif()
-
-find_package(json QUIET)
-if (NOT json_FOUND)
-    FetchContent_Declare(json
-        GIT_REPOSITORY https://github.com/nlohmann/json.git
-        GIT_TAG 6b97599a274b9b72caffa1332d5384c9aac27590 # 2022-05-31
-    )
-    set(BUILD_RAYLIB_CPP_EXAMPLES OFF CACHE BOOL "" FORCE)
-    FetchContent_MakeAvailable(json)
-    # nlohmann_json::nlohmann_json
-endif()
 
 FetchContent_Declare(bs-thread-pool
     GIT_REPOSITORY https://github.com/bshoshany/thread-pool.git

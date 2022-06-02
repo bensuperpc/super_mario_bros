@@ -8,14 +8,10 @@
 #include <nlohmann/json.hpp>
 using json = nlohmann::json;
 
-#include "sprite.hpp"
-
 #include "block.hpp"
-
 #include "raylib-cpp.hpp"
 #include "raylib.h"
-
-
+#include "sprite.hpp"
 
 namespace benlib
 {
