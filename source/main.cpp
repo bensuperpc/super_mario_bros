@@ -62,7 +62,7 @@ auto main() -> int
       auto block = new benlib::Block(&ground_texture);
       // auto block = std::make_unique<benlib::Block>(&ground_texture);
 
-      block->SetPosition(raylib::Vector2 {i * 16, j * 16});
+      block->SetPosition(raylib::Vector2 {i * 16.0, j * 16.0});
       block->SetSourceRect(raylib::Rectangle {4, 340, 16, 15});
       block->Resize(16, 16);
       level.AddBlock(block);
