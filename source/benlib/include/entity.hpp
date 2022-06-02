@@ -21,7 +21,7 @@ protected:
   float gravity = 2.0;
   bool is_gravity_affected = true;
 
-  Direction spriteDirection = Direction::LEFT;
+  Direction spriteDirection = Direction::RIGHT;
 
 public:
   Entity()
@@ -187,7 +187,7 @@ public:
 
   GETTERSETTER(float, Gravity, gravity)
   GETTERSETTER(bool, IsGravityAffected, is_gravity_affected)
-  GETTERSETTER(Direction, SpriteDirection, spriteDirection)
+  GETTERSETTER(Direction, Direction, spriteDirection)
 };
 
 };  // namespace benlib

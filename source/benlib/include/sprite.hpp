@@ -58,33 +58,22 @@ public:
     texture_source_rect = raylib::Rectangle(0, 0, image->width, image->height);
   }
 
-  /*
-    Sprite(std::string_view path)
-    {
-      this->texture = new raylib::Texture(path.data());
-      this->texture_source_rect = raylib::Rectangle {0,
-                                             0,
-                                             static_cast<float>(texture->width),
-                                             static_cast<float>(texture->height)};
-      this->raylib::Rectangle::x = 0;
-      this->raylib::Rectangle::y = 0;
-      this->raylib::Rectangle::width = static_cast<float>(texture->width);
-      this->raylib::Rectangle::height = static_cast<float>(texture->height);
-    }
+  Sprite(std::string_view path)
+      : raylib::Rectangle(0, 0, 0, 0)
+      , raylib::Texture(path.data())
+  {
+    raylib::Image&& image = raylib::Image(path.data());
+    raylib::Texture::Load(image);
 
-    Sprite(const std::string & path)
-    {
-      this->texture = new raylib::Texture(path.data());
-      this->texture_source_rect = raylib::Rectangle {0,
-                                             0,
-                                             static_cast<float>(texture->width),
-                                             static_cast<float>(texture->height)};
-      this->raylib::Rectangle::x = 0;
-      this->raylib::Rectangle::y = 0;
-      this->raylib::Rectangle::width = static_cast<float>(texture->width);
-      this->raylib::Rectangle::height = static_cast<float>(texture->height);
-    }
-    */
+    this->texture_source_rect = raylib::Rectangle {0,
+                                            0,
+                                            static_cast<float>(image.width),
+                                            static_cast<float>(image.height)};
+    this->raylib::Rectangle::x = 0;
+    this->raylib::Rectangle::y = 0;
+    this->raylib::Rectangle::width = static_cast<float>(image.width);
+    this->raylib::Rectangle::height = static_cast<float>(image.height);
+  }
 
   ~Sprite() {}
 

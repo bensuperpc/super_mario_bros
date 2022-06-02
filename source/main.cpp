@@ -205,12 +205,24 @@ void updatePlayer(benlib::Entity* player,
     player->Move(Direction::UP, frameTime, level);
   }
   if (IsKeyDown(KEY_Q) || IsKeyDown(KEY_LEFT)) {
+    if(player->GetDirection() != Direction::LEFT)
+    {
+      auto && sourceRect = player->GetSourceRect();
+      sourceRect.width = -1 * sourceRect.width;
+      player->SetSourceRect(sourceRect);
+    }
     player->Move(Direction::LEFT, frameTime, level);
   }
   if (IsKeyDown(KEY_S) || IsKeyDown(KEY_DOWN)) {
     player->Move(Direction::DOWN, frameTime, level);
   }
   if (IsKeyDown(KEY_D) || IsKeyDown(KEY_RIGHT)) {
+    if(player->GetDirection() != Direction::RIGHT)
+    {
+      auto && sourceRect = player->GetSourceRect();
+      sourceRect.width = std::abs(sourceRect.width);
+      player->SetSourceRect(sourceRect);
+    }
     player->Move(Direction::RIGHT, frameTime, level);
   }
 }
