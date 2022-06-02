@@ -1,12 +1,13 @@
 #ifndef BENLIB_LEVEL_HPP
 #define BENLIB_LEVEL_HPP
 
+#include <memory>
 #include <string>
 #include <string_view>
 #include <vector>
 
-#include <nlohmann/json.hpp>
-using json = nlohmann::json;
+//#include <nlohmann/json.hpp>
+// using json = nlohmann::json;
 
 #include "block.hpp"
 #include "raylib-cpp.hpp"
@@ -54,10 +55,9 @@ public:
     }
   }
 
-  bool CheckCollision(benlib::Sprite* entity)
+  bool CheckCollision(std::unique_ptr<Sprite>& entity)
   {
     for (auto& block : this->blocks) {
-      // if (CheckCollisionRecs(*block.get(), *entity)) {
       if (entity->CheckCollision(*block.get())) {
         return true;
       }

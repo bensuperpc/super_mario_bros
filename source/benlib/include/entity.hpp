@@ -41,11 +41,12 @@ public:
   {
   }
 
-  /*
-  Entity(const raylib::Image& image) : benlib::Sprite(image)
+  Entity(::Image* image)
+      : benlib::Sprite(image)
   {
-
   }
+
+  /*
 
   Entity(std::string_view path) : benlib::Sprite(path)
   {
@@ -186,6 +187,7 @@ public:
 
   GETTERSETTER(float, Gravity, gravity)
   GETTERSETTER(bool, IsGravityAffected, is_gravity_affected)
+  GETTERSETTER(Direction, SpriteDirection, spriteDirection)
 };
 
 };  // namespace benlib

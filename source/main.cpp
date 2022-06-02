@@ -9,6 +9,7 @@
 #include "intro/raylib_intro.h"
 #include "level.hpp"
 #include "lib.hpp"
+#include "mario.hpp"
 #include "raylib-cpp.hpp"
 
 void updatePlayer(benlib::Entity* player,
@@ -43,7 +44,7 @@ auto main() -> int
 
   raylib::Texture logo(image);
 
-  benlib::Entity player(&logo);
+  benlib::Mario player(&logo);
 
   // player.SetSourceRect(raylib::Rectangle {4, 52, 32, 16});
   // player.Resize(32, 16);
@@ -200,12 +201,16 @@ void updatePlayer(benlib::Entity* player,
                   float frameTime,
                   const benlib::Level* level)
 {
-  if (IsKeyDown(KEY_Z) || IsKeyDown(KEY_UP))
+  if (IsKeyDown(KEY_Z) || IsKeyDown(KEY_UP)) {
     player->Move(Direction::UP, frameTime, level);
-  if (IsKeyDown(KEY_Q) || IsKeyDown(KEY_LEFT))
+  }
+  if (IsKeyDown(KEY_Q) || IsKeyDown(KEY_LEFT)) {
     player->Move(Direction::LEFT, frameTime, level);
-  if (IsKeyDown(KEY_S) || IsKeyDown(KEY_DOWN))
+  }
+  if (IsKeyDown(KEY_S) || IsKeyDown(KEY_DOWN)) {
     player->Move(Direction::DOWN, frameTime, level);
-  if (IsKeyDown(KEY_D) || IsKeyDown(KEY_RIGHT))
+  }
+  if (IsKeyDown(KEY_D) || IsKeyDown(KEY_RIGHT)) {
     player->Move(Direction::RIGHT, frameTime, level);
+  }
 }
