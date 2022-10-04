@@ -14,15 +14,8 @@ private:
 public:
   Block() {}
 
-  Block(::Texture* texture)
+  Block(raylib::Texture* texture)
       : benlib::Sprite(texture)
-  {
-  }
-
-  Block(::Texture* texture,
-        raylib::Rectangle texture_source_rect,
-        raylib::Rectangle dest)
-      : benlib::Sprite(texture, texture_source_rect, dest)
   {
   }
 

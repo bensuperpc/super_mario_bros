@@ -6,10 +6,8 @@
 #include <string_view>
 #include <vector>
 
-//#include <nlohmann/json.hpp>
-// using json = nlohmann::json;
-
 #include "block.hpp"
+#include "entity.hpp"
 #include "raylib-cpp.hpp"
 #include "raylib.h"
 #include "sprite.hpp"
@@ -24,6 +22,7 @@ private:
 
 public:
   std::vector<std::unique_ptr<Block>> blocks;
+  // std::vector<std::unique_ptr<Entity>> entities;
 
   Level() {}
 
@@ -38,10 +37,7 @@ public:
     blocks.shrink_to_fit();
   }
 
-  void AddBlock()
-  {
-    blocks.emplace_back(std::make_unique<Block>());
-  }
+  // void AddBlock() { blocks.emplace_back(std::make_unique<Block>()); }
 
   void AddBlock(Block* block)
   {

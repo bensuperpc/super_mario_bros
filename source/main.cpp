@@ -12,10 +12,6 @@
 #include "mario.hpp"
 #include "raylib-cpp.hpp"
 
-void updatePlayer(benlib::Entity* player,
-                  float frameTime,
-                  const benlib::Level* level);
-
 auto main() -> int
 {
   const int screenWidth = 800;
@@ -55,29 +51,28 @@ auto main() -> int
 
   raylib::Image image_ground_texture(asset_path
                                      + "sprite sheets/blocks/Block.png");
+  image_ground_texture.Crop(4, 4, 16, 16);
+
   raylib::Texture ground_texture(image_ground_texture);
 
   for (int i = 0; i < 64; ++i) {
-    for (int j = 0; j < 2; ++j) {
+    for (int j = 0; j < 1; ++j) {
       auto block = new benlib::Block(&ground_texture);
       // auto block = std::make_unique<benlib::Block>(&ground_texture);
 
       block->SetPosition(raylib::Vector2 {i * 16, j * 16});
-      block->SetSourceRect(raylib::Rectangle {4, 340, 16, 15});
-      block->Resize(16, 16);
+      // block->SetSourceRect(raylib::Rectangle {4, 340, 16, 15});
+      // block->Resize(16, 16);
       level.AddBlock(block);
     }
   }
 
   benlib::Block ground(&ground_texture);
-  ground.SetSourceRect(raylib::Rectangle {4, 340, 16, 15});
+  // ground.SetSourceRect(raylib::Rectangle {4, 340, 16, 15});
   ground.Resize(32, 32);
   // ground.SetDrawBoundingBox(true);
 
   Vector2 mousePosition = {0.0f, -0.0f};
-  // Image imageBunny = LoadImageFromMemory(".png", wabbit_alpha_png,
-  // wabbit_alpha_png_len); Texture2D texBunny =
-  // LoadTextureFromImage(imageBunny);
 
   raylib::Camera2D camera = {};
   camera.target =
@@ -108,7 +103,7 @@ auto main() -> int
     }
     */
 
-    updatePlayer(&player, frameTime, &level);
+    player.updatePlayer(frameTime, &level);
 
     camera.target =
         (Vector2) {player.GetX() + player.Rectangle::GetWidth() / 2.0f,
@@ -144,6 +139,7 @@ auto main() -> int
 
     DrawRectangle(-6000, 320, 13000, 8000, DARKGRAY);
 
+    level.Draw();
     player.Draw();
 
     DrawLine((int)camera.target.x,
@@ -156,8 +152,6 @@ auto main() -> int
              screenWidth * 10,
              (int)camera.target.y,
              GREEN);
-
-    level.Draw();
 
     // ground.Draw();
 
@@ -177,52 +171,10 @@ auto main() -> int
         + " y: " + std::to_string((int)vecWorldCoordinates.y);
 
     DrawText(WorldCoordinates.c_str(), 650, 30, 20, RED);
-
-    /*
-    DrawRectangle(10, 10, 250, 113, Fade(SKYBLUE, 0.5f));
-    DrawRectangleLines(10, 10, 250, 113, BLUE);
-
-    DrawText("Free 2d camera controls:", 20, 20, 10, BLACK);
-    DrawText("- Right/Left to move Offset", 40, 40, 10, DARKGRAY);
-    DrawText("- Mouse Wheel to Zoom in-out", 40, 60, 10, DARKGRAY);
-    DrawText("- A / S to Rotate", 40, 80, 10, DARKGRAY);
-    DrawText("- R to reset Zoom and Rotation", 40, 100, 10, DARKGRAY);
-    */
-
     EndDrawing();
   }
 
   // CloseWindow();  // Close window and OpenGL context
 
   return 0;
-}
-
-void updatePlayer(benlib::Entity* player,
-                  float frameTime,
-                  const benlib::Level* level)
-{
-  if (IsKeyDown(KEY_Z) || IsKeyDown(KEY_UP)) {
-    player->Move(Direction::UP, frameTime, level);
-  }
-  if (IsKeyDown(KEY_Q) || IsKeyDown(KEY_LEFT)) {
-    if(player->GetDirection() != Direction::LEFT)
-    {
-      auto && sourceRect = player->GetSourceRect();
-      sourceRect.width = -1 * sourceRect.width;
-      player->SetSourceRect(sourceRect);
-    }
-    player->Move(Direction::LEFT, frameTime, level);
-  }
-  if (IsKeyDown(KEY_S) || IsKeyDown(KEY_DOWN)) {
-    player->Move(Direction::DOWN, frameTime, level);
-  }
-  if (IsKeyDown(KEY_D) || IsKeyDown(KEY_RIGHT)) {
-    if(player->GetDirection() != Direction::RIGHT)
-    {
-      auto && sourceRect = player->GetSourceRect();
-      sourceRect.width = std::abs(sourceRect.width);
-      player->SetSourceRect(sourceRect);
-    }
-    player->Move(Direction::RIGHT, frameTime, level);
-  }
 }

@@ -7,22 +7,19 @@
 
 #include "raylib-cpp.hpp"
 #include "raylib.h"
-#include "sprite.hpp"
 
 namespace benlib
 {
 
-class Sprite
-    : public raylib::Rectangle
-    , public raylib::Texture
+class Sprite : public raylib::Rectangle
 {
 protected:
-  raylib::Rectangle texture_source_rect;
-  const float rotation = 0.0;
+  raylib::Texture* texture = nullptr;
 
-  const raylib::Vector2 origin = {0, 0};
-
+  float rotation = 0.0f;
   raylib::Color tint = {255, 255, 255, 255};
+  raylib::Vector2 origin = {0, 0};
+  raylib::Rectangle source_rect = {0, 0, 0, 0};
 
   bool is_enable = true;
   bool is_visible = true;
@@ -34,45 +31,20 @@ private:
 public:
   Sprite() {}
 
-  Sprite(::Texture* texture)
+  Sprite(raylib::Texture* texture)
       : raylib::Rectangle(0, 0, texture->width, texture->height)
-      , raylib::Texture(*texture)
   {
-    texture_source_rect =
-        raylib::Rectangle(0, 0, texture->width, texture->height);
+    this->texture = texture;
+    this->source_rect = raylib::Rectangle(
+        0.0, 0.0, (float)texture->width, (float)texture->height);
   }
 
-  Sprite(::Texture* texture,
-         raylib::Rectangle texture_source_rect,
-         raylib::Rectangle dest)
+  Sprite(raylib::Texture* texture, raylib::Rectangle dest)
       : raylib::Rectangle(dest)
-      , raylib::Texture(*texture)
   {
-    this->texture_source_rect = texture_source_rect;
-  }
-
-  Sprite(::Image* image)
-      : raylib::Rectangle(0, 0, image->width, image->height)
-      , raylib::Texture(*image)
-  {
-    texture_source_rect = raylib::Rectangle(0, 0, image->width, image->height);
-  }
-
-  Sprite(std::string_view path)
-      : raylib::Rectangle(0, 0, 0, 0)
-      , raylib::Texture(path.data())
-  {
-    raylib::Image&& image = raylib::Image(path.data());
-    raylib::Texture::Load(image);
-
-    this->texture_source_rect = raylib::Rectangle {0,
-                                            0,
-                                            static_cast<float>(image.width),
-                                            static_cast<float>(image.height)};
-    this->raylib::Rectangle::x = 0;
-    this->raylib::Rectangle::y = 0;
-    this->raylib::Rectangle::width = static_cast<float>(image.width);
-    this->raylib::Rectangle::height = static_cast<float>(image.height);
+    this->texture = texture;
+    this->source_rect = raylib::Rectangle(
+        0.0, 0.0, (float)texture->width, (float)texture->height);
   }
 
   ~Sprite() {}
@@ -81,14 +53,11 @@ public:
   {
     if (this->is_enable) {
       if (this->is_visible) {
-        this->raylib::Texture::Draw(this->texture_source_rect,
-                                    *this,
-                                    this->origin,
-                                    this->rotation,
-                                    this->tint);
+        this->texture->Draw(
+            this->source_rect, *this, origin, this->rotation, this->tint);
       }
 
-      if (this->draw_bounding_box) {
+      if (true) {
         this->raylib::Rectangle::DrawLines(BLACK, 0.5f);
       }
     }
@@ -106,19 +75,7 @@ public:
     this->raylib::Rectangle::height = v.y;
   }
 
-  GETTERSETTER(::Rectangle, SourceRect, texture_source_rect)
-
-  inline ::Vector2 GetPosition() const
-  {
-    ::Vector2 vec = {this->raylib::Rectangle::x, this->raylib::Rectangle::y};
-    return vec;
-  }
-
-  inline void SetPosition(::Vector2 value)
-  {
-    this->raylib::Rectangle::x = value.x;
-    this->raylib::Rectangle::y = value.y;
-  }
+  GETTERSETTER(raylib::Texture*, Texture, texture)
 
   GETTERSETTER(float, Height, this->raylib::Rectangle::height)
   GETTERSETTER(float, Width, this->raylib::Rectangle::width)
@@ -126,7 +83,10 @@ public:
   GETTERSETTER(float, Y, this->raylib::Rectangle::y)
 
   GETTERSETTER(uint64_t, Id, id)
-  GETTERSETTER(::Color, Tint, tint)
+  GETTERSETTER(raylib::Color, Tint, tint)
+  GETTERSETTER(float, Rotation, rotation)
+  GETTERSETTER(raylib::Rectangle, SourceRect, source_rect)
+  GETTERSETTER(raylib::Vector2, Origin, origin)
 
   GETTERSETTER(bool, IsEnable, is_enable)
   GETTERSETTER(bool, IsVisible, is_visible)
